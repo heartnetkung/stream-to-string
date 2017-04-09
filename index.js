@@ -1,4 +1,4 @@
-var Promise = require('promise-polyfill')
+var StringDecoder = require('string_decoder').StringDecoder;
 
 module.exports = function (stream, enc, cb) {
     if (typeof enc === 'function') {
@@ -8,10 +8,11 @@ module.exports = function (stream, enc, cb) {
     cb = cb || function () {}
 
     var str = ''
+    var decoder = (typeof enc === 'string')? new StringDecoder(enc): new StringDecoder();
 
     return new Promise (function (resolve, reject) {
         stream.on('data', function (data) {
-            str += (typeof enc === 'string') ? data.toString(enc) : data.toString()
+            str += decoder.write(data)
         })
         stream.on('end', function () {
             resolve(str)
